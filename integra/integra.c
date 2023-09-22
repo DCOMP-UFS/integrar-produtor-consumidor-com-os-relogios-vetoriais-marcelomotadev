@@ -6,8 +6,8 @@
 #include <time.h>
 #include <mpi.h> 
 
-// * Compilação: mpicc -o integra2 integra2.c  -lpthread -lrt
-// * Execução:   mpiexec -n 3 ./integra2
+// * Compilação: mpicc -o integra integra.c  -lpthread -lrt
+// * Execução:   mpiexec -n 3 ./integra
 
 #define SIZE 10
 
@@ -20,7 +20,7 @@ typedef struct mensagem {
     int origem;
 } Mensagem;
 
-//----------------------Variáveis Globais---------------------------
+//----------------------Variáveis---------------------------
 
 // Processo 0
 Clock clock0 = {{0,0,0}};
@@ -84,35 +84,35 @@ void Send(int origem, int destino, Clock *clock){
     printClock(clock, origem); //print do clock atualizado
     // printf("Foi enviado! \n");
     
-    int *valoresClock; //valores para enviar no MPI_Send
-    valoresClock = calloc(3, sizeof(int));
+    int *clockValue; //valores para enviar no MPI_Send
+    clockValue = calloc(3, sizeof(int));
    
     for (int i = 0; i < 3; i++) { //coloca o clock atual nos valores a enviar
-        valoresClock[i] = clock->p[i];
+        clockValue[i] = clock->p[i];
     }
    
     //printf("Enviando o clock {%d, %d, %d} do processo %d para o processo %d\n", clock->p[0], clock->p[1], clock->p[2], origem, destino);
 
-    MPI_Send(valoresClock, 3, MPI_INT, destino, origem, MPI_COMM_WORLD);
+    MPI_Send(clockValue, 3, MPI_INT, destino, origem, MPI_COMM_WORLD);
    
-    free(valoresClock);
+    free(clockValue);
 }
 
 
 Clock* Receive(){
-   int *valoresClock; //valores pra receber o clock
-   valoresClock = calloc (3, sizeof(int));
+   int *clockValue; //valores pra receber o clock
+   clockValue = calloc (3, sizeof(int));
    Clock *clock = (Clock*)malloc(sizeof(Clock));
    
-   MPI_Recv(valoresClock, 3,  MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+   MPI_Recv(clockValue, 3,  MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
    
-   printf("recebido! \n");
+   // printf("recebido! \n");
   
    for (int i = 0; i < 3; i++) {//coloca os valores recebidos em um clock
-        clock->p[i] = valoresClock[i];
+        clock->p[i] = clockValue[i];
    }
 
-   free(valoresClock);
+   free(clockValue);
    return clock;
 }
 
