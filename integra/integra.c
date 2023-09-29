@@ -6,8 +6,8 @@
 #include <time.h>
 #include <mpi.h> 
 
-// * Compilação: mpicc -o integra integra.c  -lpthread -lrt
-// * Execução:   mpiexec -n 3 ./integra
+// * Compilação: mpicc -o integraNew integraNew.c  -lpthread -lrt
+// * Execução:   mpiexec -n 3 ./integraNew
 
 #define SIZE 10
 
@@ -22,51 +22,21 @@ typedef struct mensagem {
 
 //----------------------Variáveis---------------------------
 
-// Processo 0
-Clock clock0 = {{0,0,0}};
+// Processo
+Clock clockGlobal = {{0,0,0}};
 
-int filaEntradaCont0 = 0;
-pthread_cond_t condFullEntrada0;
-pthread_cond_t condEmptyEntrada0;
-pthread_mutex_t mutexEntrada0;
-Clock filaEntrada0[SIZE];
+int filaEntradaCont = 0;
+pthread_cond_t condFullEntrada;
+pthread_cond_t condEmptyEntrada;
+pthread_mutex_t mutexEntrada;
+Clock filaEntrada[SIZE];
 
-int filaSaidaCont0 = 0;
-pthread_cond_t condFullSaida0;
-pthread_cond_t condEmptySaida0;
-pthread_mutex_t mutexSaida0;
-Mensagem filaSaida0[SIZE];
+int filaSaidaCont = 0;
+pthread_cond_t condFullSaida;
+pthread_cond_t condEmptySaida;
+pthread_mutex_t mutexSaida;
+Mensagem filaSaida[SIZE];
 
-// Processo 1
-Clock clock1 = {{0,0,0}};
-
-int filaEntradaCont1 = 0;
-pthread_cond_t condFullEntrada1;
-pthread_cond_t condEmptyEntrada1;
-pthread_mutex_t mutexEntrada1;
-Clock filaEntrada1[SIZE];
-
-int filaSaidaCont1 = 0;
-pthread_cond_t condFullSaida1;
-pthread_cond_t condEmptySaida1;
-pthread_mutex_t mutexSaida1;
-Mensagem filaSaida1[SIZE];
-
-
-// Processo 2
-Clock clock2 = {{0,0,0}};
-
-int filaEntradaCont2 = 0;
-pthread_cond_t condFullEntrada2;
-pthread_cond_t condEmptyEntrada2;
-pthread_mutex_t mutexEntrada2;
-Clock filaEntrada2[SIZE];
-
-int filaSaidaCont2 = 0;
-pthread_cond_t condFullSaida2;
-pthread_cond_t condEmptySaida2;
-pthread_mutex_t mutexSaida2;
-Mensagem filaSaida2[SIZE];
 
 // declaração de funções
 
@@ -206,48 +176,48 @@ void retiraFilaEntrada(pthread_mutex_t* mutex, pthread_cond_t* condEmpty, pthrea
 void* threadRelogio(void* arg) {
     long p = (long) arg;
     if (p == 0) {
-        Event(0, &clock0);
-        printClock(&clock0, 0);
+        Event(0, &clockGlobal);
+        printClock(&clockGlobal, 0);
         
-        insereFilaSaida(&mutexSaida0, &condEmptySaida0, &condFullSaida0, &filaSaidaCont0, filaSaida0, &clock0, 0, 1); //envia do processo 0 ao processo 1
+        insereFilaSaida(&mutexSaida, &condEmptySaida, &condFullSaida, &filaSaidaCont, filaSaida, &clockGlobal, 0, 1); //envia do processo 0 ao processo 1
         //printClock(&clock0, 0);
         
-        retiraFilaEntrada(&mutexEntrada0, &condEmptyEntrada0, &condFullEntrada0, &filaEntradaCont0, filaEntrada0, &clock0, 0); //recebe
+        retiraFilaEntrada(&mutexEntrada, &condEmptyEntrada, &condFullEntrada, &filaEntradaCont, filaEntrada, &clockGlobal, 0); //recebe
         //printClock(&clock0, 0);
         
-        insereFilaSaida(&mutexSaida0, &condEmptySaida0, &condFullSaida0, &filaSaidaCont0, filaSaida0, &clock0, 0, 2); //envia do processo 0 ao processo 2
+        insereFilaSaida(&mutexSaida, &condEmptySaida, &condFullSaida, &filaSaidaCont, filaSaida, &clockGlobal, 0, 2); //envia do processo 0 ao processo 2
        // printClock(&clock0, 0);
         
-        retiraFilaEntrada(&mutexEntrada0, &condEmptyEntrada0, &condFullEntrada0, &filaEntradaCont0, filaEntrada0, &clock0, 0); //recebe
+        retiraFilaEntrada(&mutexEntrada, &condEmptyEntrada, &condFullEntrada, &filaEntradaCont, filaEntrada, &clockGlobal, 0); //recebe
         //printClock(&clock0, 0);
         
-        insereFilaSaida(&mutexSaida0, &condEmptySaida0, &condFullSaida0, &filaSaidaCont0, filaSaida0, &clock0, 0, 1); //envia do processo 0 ao processo 1
+        insereFilaSaida(&mutexSaida, &condEmptySaida, &condFullSaida, &filaSaidaCont, filaSaida, &clockGlobal, 0, 1); //envia do processo 0 ao processo 1
         //printClock(&clock0, 0);
 
-        Event(0, &clock0);
-        printClock(&clock0, 0);
+        Event(0, &clockGlobal);
+        printClock(&clockGlobal, 0);
         
     }
     
     if (p == 1) {
-        insereFilaSaida(&mutexSaida1, &condEmptySaida1, &condFullSaida1, &filaSaidaCont1, filaSaida1, &clock1, 1, 0); //envia do processo 1 ao processo 0
+        insereFilaSaida(&mutexSaida, &condEmptySaida, &condFullSaida, &filaSaidaCont, filaSaida, &clockGlobal, 1, 0); //envia do processo 1 ao processo 0
         //printClock(&clock1, 1);
 
-        retiraFilaEntrada(&mutexEntrada1, &condEmptyEntrada1, &condFullEntrada1, &filaEntradaCont1, filaEntrada1, &clock1, 1); //recebe
+        retiraFilaEntrada(&mutexEntrada, &condEmptyEntrada, &condFullEntrada, &filaEntradaCont, filaEntrada, &clockGlobal, 1); //recebe
         //printClock(&clock1, 1);
 
-        retiraFilaEntrada(&mutexEntrada1, &condEmptyEntrada1, &condFullEntrada1, &filaEntradaCont1, filaEntrada1, &clock1, 1); //recebe
+        retiraFilaEntrada(&mutexEntrada, &condEmptyEntrada, &condFullEntrada, &filaEntradaCont, filaEntrada, &clockGlobal, 1); //recebe
         //printClock(&clock1, 1);
     }
 
     if (p == 2) {
-        Event(2, &clock2);
-        printClock(&clock2, 2);
+        Event(2, &clockGlobal);
+        printClock(&clockGlobal, 2);
 
-        insereFilaSaida(&mutexSaida2, &condEmptySaida2, &condFullSaida2, &filaSaidaCont2, filaSaida2, &clock2, 2, 0); //envia do processo 2 ao processo 0
+        insereFilaSaida(&mutexSaida, &condEmptySaida, &condFullSaida, &filaSaidaCont, filaSaida, &clockGlobal, 2, 0); //envia do processo 2 ao processo 0
         //printClock(&clock2, 2);
 
-        retiraFilaEntrada(&mutexEntrada2, &condEmptyEntrada2, &condFullEntrada2, &filaEntradaCont2, filaEntrada2, &clock2, 2); //recebe
+        retiraFilaEntrada(&mutexEntrada, &condEmptyEntrada, &condFullEntrada, &filaEntradaCont, filaEntrada, &clockGlobal, 2); //recebe
         //printClock(&clock2, 2);
     }
     return NULL;
@@ -257,13 +227,13 @@ void* threadSaida(void* arg) {
     long p = (long) arg;
     while(1) {
         if (p == 0) {
-            retiraFilaSaida(&mutexSaida0, &condEmptySaida0, &condFullSaida0, &filaSaidaCont0, filaSaida0, &clock0);
+            retiraFilaSaida(&mutexSaida, &condEmptySaida, &condFullSaida, &filaSaidaCont, filaSaida, &clockGlobal);
         }
         if (p == 1) {
-            retiraFilaSaida(&mutexSaida1, &condEmptySaida1, &condFullSaida1, &filaSaidaCont1, filaSaida1, &clock1);
+            retiraFilaSaida(&mutexSaida, &condEmptySaida, &condFullSaida, &filaSaidaCont, filaSaida, &clockGlobal);
         }
         if (p == 2) {
-            retiraFilaSaida(&mutexSaida2, &condEmptySaida2, &condFullSaida2, &filaSaidaCont2, filaSaida2, &clock2);
+            retiraFilaSaida(&mutexSaida, &condEmptySaida, &condFullSaida, &filaSaidaCont, filaSaida, &clockGlobal);
         }
     }
     return NULL;
@@ -273,13 +243,13 @@ void* threadEntrada(void* arg) {
     long p = (long) arg;
     while(1) {
         if (p == 0) {
-            insereFilaEntrada(&mutexEntrada0, &condEmptyEntrada0, &condFullEntrada0, &filaEntradaCont0, filaEntrada0, &clock0);
+            insereFilaEntrada(&mutexEntrada, &condEmptyEntrada, &condFullEntrada, &filaEntradaCont, filaEntrada, &clockGlobal);
         }
         if (p == 1) {
-            insereFilaEntrada(&mutexEntrada1, &condEmptyEntrada1, &condFullEntrada1, &filaEntradaCont1, filaEntrada1, &clock1);
+            insereFilaEntrada(&mutexEntrada, &condEmptyEntrada, &condFullEntrada, &filaEntradaCont, filaEntrada, &clockGlobal);
         }
         if (p == 2) {
-            insereFilaEntrada(&mutexEntrada2, &condEmptyEntrada2, &condFullEntrada2, &filaEntradaCont2, filaEntrada2, &clock2);
+            insereFilaEntrada(&mutexEntrada, &condEmptyEntrada, &condFullEntrada, &filaEntradaCont, filaEntrada, &clockGlobal);
         }
     }
     return NULL;
@@ -295,28 +265,28 @@ void processo(long p) {
     
     //inicializações
     if (p == 0) {
-        pthread_cond_init(&condFullEntrada0, NULL);
-        pthread_cond_init(&condEmptyEntrada0, NULL);
-        pthread_cond_init(&condFullSaida0, NULL);
-        pthread_cond_init(&condEmptySaida0, NULL);
-        pthread_mutex_init(&mutexEntrada0, NULL);
-        pthread_mutex_init(&mutexSaida0, NULL);
+        pthread_cond_init(&condFullEntrada, NULL);
+        pthread_cond_init(&condEmptyEntrada, NULL);
+        pthread_cond_init(&condFullSaida, NULL);
+        pthread_cond_init(&condEmptySaida, NULL);
+        pthread_mutex_init(&mutexEntrada, NULL);
+        pthread_mutex_init(&mutexSaida, NULL);
     }
     if (p == 1) {
-        pthread_cond_init(&condFullEntrada1, NULL);
-        pthread_cond_init(&condEmptyEntrada1, NULL);
-        pthread_cond_init(&condFullSaida1, NULL);
-        pthread_cond_init(&condEmptySaida1, NULL);
-        pthread_mutex_init(&mutexEntrada1, NULL);
-        pthread_mutex_init(&mutexSaida1, NULL);
+        pthread_cond_init(&condFullEntrada, NULL);
+        pthread_cond_init(&condEmptyEntrada, NULL);
+        pthread_cond_init(&condFullSaida, NULL);
+        pthread_cond_init(&condEmptySaida, NULL);
+        pthread_mutex_init(&mutexEntrada, NULL);
+        pthread_mutex_init(&mutexSaida, NULL);
     }
     if (p == 2) {
-        pthread_cond_init(&condFullEntrada2, NULL);
-        pthread_cond_init(&condEmptyEntrada2, NULL);
-        pthread_cond_init(&condFullSaida2, NULL);
-        pthread_cond_init(&condEmptySaida2, NULL);
-        pthread_mutex_init(&mutexEntrada2, NULL);
-        pthread_mutex_init(&mutexSaida2, NULL);
+        pthread_cond_init(&condFullEntrada, NULL);
+        pthread_cond_init(&condEmptyEntrada, NULL);
+        pthread_cond_init(&condFullSaida, NULL);
+        pthread_cond_init(&condEmptySaida, NULL);
+        pthread_mutex_init(&mutexEntrada, NULL);
+        pthread_mutex_init(&mutexSaida, NULL);
     }
     
 
@@ -344,28 +314,28 @@ void processo(long p) {
     
     //destroi as condições e mutex
     if (p == 0) {
-        pthread_cond_destroy(&condFullEntrada0);
-        pthread_cond_destroy(&condEmptyEntrada0);
-        pthread_cond_destroy(&condFullSaida0);
-        pthread_cond_destroy(&condEmptySaida0);
-        pthread_mutex_destroy(&mutexEntrada0);
-        pthread_mutex_destroy(&mutexSaida0);
+        pthread_cond_destroy(&condFullEntrada);
+        pthread_cond_destroy(&condEmptyEntrada);
+        pthread_cond_destroy(&condFullSaida);
+        pthread_cond_destroy(&condEmptySaida);
+        pthread_mutex_destroy(&mutexEntrada);
+        pthread_mutex_destroy(&mutexSaida);
     }
     if (p == 1) {
-        pthread_cond_destroy(&condFullEntrada1);
-        pthread_cond_destroy(&condEmptyEntrada1);
-        pthread_cond_destroy(&condFullSaida1);
-        pthread_cond_destroy(&condEmptySaida1);
-        pthread_mutex_destroy(&mutexEntrada1);
-        pthread_mutex_destroy(&mutexSaida1);
+        pthread_cond_destroy(&condFullEntrada);
+        pthread_cond_destroy(&condEmptyEntrada);
+        pthread_cond_destroy(&condFullSaida);
+        pthread_cond_destroy(&condEmptySaida);
+        pthread_mutex_destroy(&mutexEntrada);
+        pthread_mutex_destroy(&mutexSaida);
     }
     if (p == 2) {
-        pthread_cond_destroy(&condFullEntrada2);
-        pthread_cond_destroy(&condEmptyEntrada2);
-        pthread_cond_destroy(&condFullSaida2);
-        pthread_cond_destroy(&condEmptySaida2);
-        pthread_mutex_destroy(&mutexEntrada2);
-        pthread_mutex_destroy(&mutexSaida2);
+        pthread_cond_destroy(&condFullEntrada);
+        pthread_cond_destroy(&condEmptyEntrada);
+        pthread_cond_destroy(&condFullSaida);
+        pthread_cond_destroy(&condEmptySaida);
+        pthread_mutex_destroy(&mutexEntrada);
+        pthread_mutex_destroy(&mutexSaida);
     }
 
 }
