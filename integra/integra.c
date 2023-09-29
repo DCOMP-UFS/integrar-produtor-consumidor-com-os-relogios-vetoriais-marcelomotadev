@@ -20,7 +20,9 @@ typedef struct mensagem {
     int origem;
 } Mensagem;
 
-//----------------------Variáveis do Processo ---------------------------
+//----------------------Variáveis---------------------------
+
+// Processo
 Clock clockGlobal = {{0,0,0}};
 
 int filaEntradaCont = 0;
@@ -224,15 +226,7 @@ void* threadRelogio(void* arg) {
 void* threadSaida(void* arg) {
     long p = (long) arg;
     while(1) {
-        if (p == 0) {
-            retiraFilaSaida(&mutexSaida, &condEmptySaida, &condFullSaida, &filaSaidaCont, filaSaida, &clockGlobal);
-        }
-        if (p == 1) {
-            retiraFilaSaida(&mutexSaida, &condEmptySaida, &condFullSaida, &filaSaidaCont, filaSaida, &clockGlobal);
-        }
-        if (p == 2) {
-            retiraFilaSaida(&mutexSaida, &condEmptySaida, &condFullSaida, &filaSaidaCont, filaSaida, &clockGlobal);
-        }
+        retiraFilaSaida(&mutexSaida, &condEmptySaida, &condFullSaida, &filaSaidaCont, filaSaida, &clockGlobal);
     }
     return NULL;
 }
@@ -240,15 +234,7 @@ void* threadSaida(void* arg) {
 void* threadEntrada(void* arg) {
     long p = (long) arg;
     while(1) {
-        if (p == 0) {
-            insereFilaEntrada(&mutexEntrada, &condEmptyEntrada, &condFullEntrada, &filaEntradaCont, filaEntrada, &clockGlobal);
-        }
-        if (p == 1) {
-            insereFilaEntrada(&mutexEntrada, &condEmptyEntrada, &condFullEntrada, &filaEntradaCont, filaEntrada, &clockGlobal);
-        }
-        if (p == 2) {
-            insereFilaEntrada(&mutexEntrada, &condEmptyEntrada, &condFullEntrada, &filaEntradaCont, filaEntrada, &clockGlobal);
-        }
+        insereFilaEntrada(&mutexEntrada, &condEmptyEntrada, &condFullEntrada, &filaEntradaCont, filaEntrada, &clockGlobal);
     }
     return NULL;
 }
@@ -261,31 +247,14 @@ void processo(long p) {
     pthread_t tEntrada;
     pthread_t tRelogio;
     
-    //inicializações
-    if (p == 0) {
-        pthread_cond_init(&condFullEntrada, NULL);
-        pthread_cond_init(&condEmptyEntrada, NULL);
-        pthread_cond_init(&condFullSaida, NULL);
-        pthread_cond_init(&condEmptySaida, NULL);
-        pthread_mutex_init(&mutexEntrada, NULL);
-        pthread_mutex_init(&mutexSaida, NULL);
-    }
-    if (p == 1) {
-        pthread_cond_init(&condFullEntrada, NULL);
-        pthread_cond_init(&condEmptyEntrada, NULL);
-        pthread_cond_init(&condFullSaida, NULL);
-        pthread_cond_init(&condEmptySaida, NULL);
-        pthread_mutex_init(&mutexEntrada, NULL);
-        pthread_mutex_init(&mutexSaida, NULL);
-    }
-    if (p == 2) {
-        pthread_cond_init(&condFullEntrada, NULL);
-        pthread_cond_init(&condEmptyEntrada, NULL);
-        pthread_cond_init(&condFullSaida, NULL);
-        pthread_cond_init(&condEmptySaida, NULL);
-        pthread_mutex_init(&mutexEntrada, NULL);
-        pthread_mutex_init(&mutexSaida, NULL);
-    }
+    //inicialização
+    pthread_cond_init(&condFullEntrada, NULL);
+    pthread_cond_init(&condEmptyEntrada, NULL);
+    pthread_cond_init(&condFullSaida, NULL);
+    pthread_cond_init(&condEmptySaida, NULL);
+    pthread_mutex_init(&mutexEntrada, NULL);
+    pthread_mutex_init(&mutexSaida, NULL);
+    
     
 
     //cria threads
@@ -311,30 +280,12 @@ void processo(long p) {
     } 
     
     //destroi as condições e mutex
-    if (p == 0) {
-        pthread_cond_destroy(&condFullEntrada);
-        pthread_cond_destroy(&condEmptyEntrada);
-        pthread_cond_destroy(&condFullSaida);
-        pthread_cond_destroy(&condEmptySaida);
-        pthread_mutex_destroy(&mutexEntrada);
-        pthread_mutex_destroy(&mutexSaida);
-    }
-    if (p == 1) {
-        pthread_cond_destroy(&condFullEntrada);
-        pthread_cond_destroy(&condEmptyEntrada);
-        pthread_cond_destroy(&condFullSaida);
-        pthread_cond_destroy(&condEmptySaida);
-        pthread_mutex_destroy(&mutexEntrada);
-        pthread_mutex_destroy(&mutexSaida);
-    }
-    if (p == 2) {
-        pthread_cond_destroy(&condFullEntrada);
-        pthread_cond_destroy(&condEmptyEntrada);
-        pthread_cond_destroy(&condFullSaida);
-        pthread_cond_destroy(&condEmptySaida);
-        pthread_mutex_destroy(&mutexEntrada);
-        pthread_mutex_destroy(&mutexSaida);
-    }
+    pthread_cond_destroy(&condFullEntrada);
+    pthread_cond_destroy(&condEmptyEntrada);
+    pthread_cond_destroy(&condFullSaida);
+    pthread_cond_destroy(&condEmptySaida);
+    pthread_mutex_destroy(&mutexEntrada);
+    pthread_mutex_destroy(&mutexSaida);
 
 }
 
