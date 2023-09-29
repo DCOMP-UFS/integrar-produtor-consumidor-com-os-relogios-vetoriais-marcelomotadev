@@ -20,9 +20,7 @@ typedef struct mensagem {
     int origem;
 } Mensagem;
 
-//----------------------Variáveis---------------------------
-
-// Processo
+//----------------------Variáveis do Processo ---------------------------
 Clock clockGlobal = {{0,0,0}};
 
 int filaEntradaCont = 0;
