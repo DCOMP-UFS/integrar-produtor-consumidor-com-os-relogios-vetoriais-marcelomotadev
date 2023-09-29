@@ -6,8 +6,8 @@
 #include <time.h>
 #include <mpi.h> 
 
-// * Compilação: mpicc -o integraNew integraNew.c  -lpthread -lrt
-// * Execução:   mpiexec -n 3 ./integraNew
+// * Compilação: mpicc -o integra integra.c  -lpthread -lrt
+// * Execução:   mpiexec -n 3 ./integra
 
 #define SIZE 10
 
